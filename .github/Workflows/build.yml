@@ -1,0 +1,21 @@
+name: Build App
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Inject app code
+        run: |
+          curl -o app.jsx https://raw.githubusercontent.com/brunolemoslarilemos/Ordena/main/Index.html
+          node -e "
+          const fs = require('fs');
+          const html = fs.readFileSync('Index.html','utf8');
+          const app = fs.readFileSync('app.jsx','utf8');
+          fs.writeFileSync('Index.html', html.replace('// APP_PLACEHOLDER', app));
+          "
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Inject app
